@@ -1,6 +1,6 @@
 # City & Metro
 
-> **Candquarzy community edition**: upstream v2.5.0 with the existing empty-network Beijing map and saves preserved, plus a separate upstream Beijing map. See [community map and save notes](./docs/beijing-map.md). Original author: [VinsonFung](https://github.com/VinsonFung); [upstream repository](https://github.com/VinsonFung/city-and-metro).
+> **Candquarzy community edition**: based on upstream v2.5.0, adding Taiyuan (2000) while preserving the existing empty-network Beijing map and saves, plus a separate upstream Beijing map. Open this checkout's `index.html` and choose Taiyuan; the upstream website does not include this map. See [Taiyuan](./docs/taiyuan-map.md) and [community map and save notes](./docs/beijing-map.md). Original author: [VinsonFung](https://github.com/VinsonFung); [upstream repository](https://github.com/VinsonFung/city-and-metro).
 
 [简体中文](./README.md) · [繁體中文](./README.zh-TW.md) · **English**
 
@@ -28,7 +28,7 @@ Community-edition links will be collected and integrated into the original game 
 
 ## What you can do
 
-- **Choose a city and era.** Nine real cities and the separate Qingwan tutorial have distinct geography, development stages, and local goals. Free Build also lets you choose a starting year and unlock construction across the map.
+- **Choose a city and era.** Ten real cities and the separate Qingwan tutorial have distinct geography, development stages, and local goals. Free Build also lets you choose a starting year and unlock construction across the map.
 - **Design your network.** Build underground, surface, and elevated lines, curves, loops, branches, and multilevel interchanges. Adjust platform directions, split or merge lines, and preview or undo drafts before construction.
 - **Run a city's metro.** Choose unlimited funds or balance construction, operations, fares, grants, and debt in financial challenges. Use ridership, congestion, walking coverage, and construction impact reports to plan your next move.
 - **Grow with the city.** New districts, airports, campuses, and attractions open over time. Historical events affect travel and the economy; complete facility-access tasks and review stage summaries and the city chronicle. Airports outside the map show direction, distance, and demand beyond the boundary; connect a line to their boundary entrance to serve them.
@@ -36,7 +36,7 @@ Community-edition links will be collected and integrated into the original game 
 
 - **Let metro shape the city.** Residents gradually develop a metro habit after stations open, while new homes and jobs cluster around the network. Compare congestion over time and inspect the metro-led development layer.
 - **Develop and decorate stations.** Add advertising and convenience stores, shopping streets, or integrated station developments for non-fare revenue. Choose station styles, theme colours, public art, and signs.
-- **Hear from passengers.** The Metro Circle shows posts, replies, and satisfaction based on your current simulation. Follow residents across months, and choose from 18 local planning challenges across the nine real cities.
+- **Hear from passengers.** The Metro Circle shows posts, replies, and satisfaction based on your current simulation. Follow residents across months, and choose from 20 local planning challenges across the ten real cities.
 
 - **Manage trains and services.** Buy, assign and sell 43 train models unlocked by city and era. Schedule morning peak, daytime, evening peak and night service, with separate directions on loops. Choose line speeds from 40–120 km/h and add express or short services.
 - **Run the network in Metro Core.** Open the lower-right management app for network, line, station and fleet overviews, filtered and sorted tables, trends, maps and upgrade previews. Locate or automatically address persistent overload.
@@ -54,9 +54,9 @@ All four screenshots were recaptured from local **v2.5.0** on 2026-11-04, using 
 
 ### Choose your city
 
-Each of the ten maps has an introduction, features, and a timeline grouped by era. Drag the region and era filters horizontally to see more options. Hong Kong is shown here, including its expanded island and airport area.
+Each of the twelve maps has an introduction, features, and a timeline grouped by era. Drag the region and era filters horizontally to see more options. Hong Kong is shown here, including its expanded island and airport area.
 
-![v2.5 map selection: ten maps, Hong Kong details, and historical timeline](./img/screenshot-map-selection.png)
+![v2.5 map selection: twelve maps, Hong Kong details, and historical timeline](./img/screenshot-map-selection.png)
 
 ### Tokyo: begin with the Ginza Line
 
@@ -85,13 +85,15 @@ Economic statistics show GDP, growth, local finances, and transport efficiency. 
 | Hangzhou | 2000 | West Lake, the Qiantang River, new districts, and Xiaoshan Airport |
 | Hong Kong | 1970 | Mountains, harbor, new towns, reclamation, and Chek Lap Kok Airport |
 | Taipei | 1990 | A basin, three rivers, and multiple urban centers |
-| Beijing | 1990 | Take over 29 stations on Line 1 and the loop Line 2; connect ring roads, Olympic venues, and the subcenter |
+| Beijing | 1990 | Community empty-network map; connect ring roads, Olympic venues, and the subcenter |
+| Beijing (Upstream) | 1990 | Take over 29 stations on Line 1 and the loop Line 2; connect ring roads, Olympic venues, and the subcenter |
+| Taiyuan | 2000 | The Fen River between mountain ranges, Changfeng business district, South station, and Wusu Airport |
 | Tokyo | 1950 | Take over 18 Ginza Line stations; connect subcenters and Haneda Airport |
 | Shanghai | 1990 | The Huangpu River, Pudong development, the World Expo, and Disneyland |
 | Wuhan | 2000 | Three towns, two rivers, East Lake, Optics Valley, and Tianhe Airport |
 | Paris | 1900 | A century of change, cross-city commuting, and two major airports |
 
-All nine real cities support financial challenges and Free Build, with currency, fares, and financial parameters appropriate to each city and era. Later real-world metro lines do not appear automatically; you design the network.
+All ten real cities support financial challenges and Free Build, with currency, fares, and financial parameters appropriate to each city and era. Later real-world metro lines do not appear automatically; you design the network.
 
 ## Running and saving
 

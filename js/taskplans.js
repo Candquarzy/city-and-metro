@@ -196,6 +196,20 @@
       'bj-g3': { parts: [pull(['daxing'], '亦庄·大兴', 1)] },
       'bj-g4': { parts: [fac('bj_fzx', 0.15)] },
     },
+    // 太原：汾河两岸、南部枢纽接驳。仅适用之后发布的任务，已发布任务保持原说明。
+    ty: {
+      ty1: { parts: [hub('迎泽大街', 2)] },
+      ty2: { parts: [cross(1, 100, '跨汾河轨道')] },
+      ty3: { parts: [regCov(['xiadian'], '小店与平阳路', 0.2)] },
+      ty4: { parts: [fac('ty_airport', 0.15)] },
+      ty5: { parts: [regCov(['changfeng'], '长风商务区', 0.25)] },
+      ty6: { base: 'direct', parts: [fac('ty_south', 0.2)] },
+      ty7: { parts: [commute(['wanbailin'], '万柏林', 0.08)] },
+      'ty-community-sc1': { parts: [cross(1, 100, '跨汾河轨道')] },
+      'ty-community-sc2': { parts: [fac('ty_airport', 0.12), fac('ty_south', 0.12)] },
+      'ty-g1': { parts: [commute(['wanbailin'], '万柏林', 0.08)] },
+      'ty-g2': { parts: [regCov(['changfeng'], '长风商务区', 0.2)] },
+    },
     // 东京：通勤地狱、副都心、直通运转、跨湾
     tk: {
       tk1: { base: 'direct', parts: [riders(8000)] },

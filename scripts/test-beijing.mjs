@@ -13,7 +13,7 @@ for (const [, src] of (await readFile(path.join(root, 'index.html'), 'utf8')).ma
 }
 const C = c.CM, m = C.MAPS.bj;
 assert.ok(m && C.MAP_ORDER.filter(id => id === 'bj').length === 1);
-assert.equal(C.MAP_ORDER.length, 11);
+assert.equal(C.MAP_ORDER.length, 12);
 assert.equal(m.fp, '3288b0d5', 'Existing community Beijing saves must keep their original map fingerprint');
 assert.deepEqual(Array.from(m.modes), ['challenge', 'free']);
 assert.equal(m.cfg.W % C.CFG.ZONE, 0); assert.equal(m.cfg.H % C.CFG.ZONE, 0);
