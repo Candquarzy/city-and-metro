@@ -7,29 +7,40 @@
   const IDX = P + 'index';
 
   // ---------------- 存储后端 ----------------
-  let db = null, dbFailed = false, opening = null;
+  let db = null, opening = null;
+  function closeDB(connection) {
+    // 旧连接的迟到事件不能清掉已经重建的新连接。
+    if (db === connection) db = null;
+    try { connection.close(); } catch (e) { /* 已关闭。 */ }
+  }
+  function unavailableDB() {
+    const e = new Error('IndexedDB 不可用');
+    e.idbUnavailable = true;
+    return e;
+  }
   function openDB() {
-    if (db || dbFailed) return Promise.resolve(db);
+    if (db) return Promise.resolve(db);
     if(opening)return opening;
     opening = new Promise(function (resolve) {
       let settled=false;
-      const fail=function(){if(settled)return;settled=true;dbFailed=true;resolve(null);};
+      // 打开失败只影响本次操作；下次保存 / 读取仍可恢复，不能整场禁用数据库。
+      const fail=function(){if(settled)return;settled=true;resolve(null);};
       let req;
       try { req = indexedDB.open('city-metro', 1); } catch (e) { fail(); return; }
       req.onupgradeneeded = function () { if(!req.result.objectStoreNames.contains('slots'))req.result.createObjectStore('slots'); };
       req.onsuccess = function () {
         if(settled){req.result.close();return;}
         settled=true;db=req.result;const opened=db;
-        opened.onversionchange=function(){opened.close();if(db===opened){db=null;dbFailed=false;}};
+        opened.onversionchange=opened.onclose=function(){closeDB(opened);};
         resolve(db);
       };
       req.onerror = req.onblocked = fail;
     }).finally(function(){opening=null;});
     return opening;
   }
-  function idbOp(mode, fn) {
+  function idbOp(mode, fn, retry = true) {
     return openDB().then(function (d) {
-      if (!d) throw new Error('IndexedDB 不可用');
+      if (!d) throw unavailableDB();
       return new Promise(function (resolve, reject) {
         const tx = d.transaction('slots', mode);
         const st = tx.objectStore('slots');
@@ -39,18 +50,30 @@
         tx.oncomplete = function () { resolve(result); };
         tx.onerror = function () { reject(tx.error || new Error('IndexedDB 写入失败')); };
         tx.onabort = function () { reject(tx.error || new Error('IndexedDB 事务中止')); };
+      }).catch(function (e) {
+        // 关闭中的连接不能再创建事务；异常关闭也可能先中止事务，再派发 close。
+        // 本层只有按键 put/get/delete，重新执行同一次操作不会重复创建存档槽位。
+        if (!e || (e.name !== 'InvalidStateError' && e.name !== 'AbortError')) throw e;
+        closeDB(d);
+        if (retry) return idbOp(mode, fn, false);
+        throw unavailableDB();
       });
     });
   }
   const store = {
     put: function (key, str) {
       return idbOp('readwrite', function (st) { return st.put(str, key); }).then(function () { return 'idb'; })
-        .catch(function (e) { if (db) throw e; localStorage.setItem(key, str); return 'ls'; });
+        .catch(function (e) { if (!e.idbUnavailable) throw e; localStorage.setItem(key, str); return 'ls'; });
     },
     get: function (key, where) {
       if (where === 'ls') return Promise.resolve(localStorage.getItem(key));
       return idbOp('readonly', function (st) { return st.get(key); })
-        .then(function (v) { return v != null ? v : localStorage.getItem(key); }, function () { return localStorage.getItem(key); });
+        .then(function (v) { return v != null ? v : localStorage.getItem(key); }, function (e) {
+          const fallback = localStorage.getItem(key);
+          // 已知在 IDB 中的存档不能因暂时断连就被误报为「数据丢失」。
+          if (fallback == null && where === 'idb') throw e;
+          return fallback;
+        });
     },
     del: function (key, where) {
       try { localStorage.removeItem(key); } catch (e) { /* ignore */ }
@@ -183,6 +206,12 @@
     if (payload && payload.rulesRevision != null && (!Number.isSafeInteger(payload.rulesRevision) || payload.rulesRevision < 0 || payload.rulesRevision > (CFG.RULES_REVISION || 0))) throw new Error('存档使用了当前游戏尚不支持的经营与建设规则，请使用对应版本载入');
     const ok = payload && payload.meta && payload.clock && payload.city && payload.net && payload.econ && payload.tasks;
     if (!ok) throw new Error('存档缺少必要数据');
+    // 官方 2.5 北京图此前也使用 bj / v1；通过精确指纹与尺寸区分，保留 fork 原 bj 存档。
+    if (payload.meta.map === 'bj' && payload.meta.mapFp === '80c363c4') {
+      if (!payload.city.pop || payload.city.pop.n !== 204 * 156 || !CM.MAPS.bj_official || (payload.meta.mapVersion || 1) !== 1) throw new Error('原版北京存档的尺寸或版本不符，原存档未改动');
+      payload.meta.map = 'bj_official'; payload.meta.scenario = CM.MAPS.bj_official.scenario;
+      payload.meta.mapFp = CM.MAPS.bj_official.fp; payload.__renamedBeijingMap = true;
+    }
     // 存档所属地图（1.4 版之前的存档都是广州）：按该地图的网格尺寸校验
     const mp = CM.MAPS && CM.MAPS[payload.meta.map || 'gz'];
     if (!mp) throw new Error('存档使用的地图「' + payload.meta.map + '」在当前版本中不存在');
@@ -230,7 +259,7 @@
       const terrainUpgrade = (p.city.terrainRevision || 1) < (mp.data.terrainRevision || 1);
       const displayUpgrade = (p.city.displayRevision || 1) < (mp.data.displayRevision || 1);
       const rulesUpgrade = (p.rulesRevision || 0) < (CFG.RULES_REVISION || 0);
-      if (tv >= (CFG.TRAFFIC_MODEL || 1) && !rulesUpgrade && !p.__mapMigratedFrom && !terrainUpgrade && !displayUpgrade) {
+      if (tv >= (CFG.TRAFFIC_MODEL || 1) && !rulesUpgrade && !p.__mapMigratedFrom && !p.__renamedBeijingMap && !terrainUpgrade && !displayUpgrade) {
         if (!CM.TrafficCache) return p;
         return CM.TrafficCache.keyFor(parsed.env.body).then(async function (key) {
           Object.defineProperty(p, '__trafficKey', { value: key });
@@ -335,6 +364,7 @@
       const idx = readIndex(true);
       const p = r.payload;
       delete p.__mapMigratedFrom;   // 导入即为新副本（原文件仍在玩家手中），不再另建升级前备份；迁移结果随副本保存
+      delete p.__renamedBeijingMap; // 地图 ID 已随导入副本写入，不再重复触发旧 ID 备份
       if (p.mapUpgrade) p.mapUpgrade.imported = true;
       let gameId = p.meta.gameId, name = p.meta.name;
       if (idx.games[gameId]) { gameId = U.uid('g'); name = name + '（导入）'; p.meta.gameId = gameId; p.meta.name = name; }

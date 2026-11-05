@@ -1,8 +1,8 @@
 # 北京地图社区版
 
-此 fork 在原版基础上新增北京（`bj` / `bj-1990`），保留原作者 VinsonFung、[原版游戏](https://city-and-metro.pages.dev)、[原始仓库](https://github.com/VinsonFung/city-and-metro)及原有许可。地图支持经营挑战、自由建造、自定义起年、全图解锁以及原有 JSON 存档。
+此 fork 优先保留社区版北京地图原有标识（`bj` / `bj-1990`）及其存档，同时保留原作者 v2.5 北京地图（`bj_official`）。保留原作者 VinsonFung、[原版游戏](https://city-and-metro.pages.dev)、[原始仓库](https://github.com/VinsonFung/city-and-metro)及原有许可。两个版本的开局路线、地图范围和存档相互独立；原版 v2.5 的北京存档根据地图指纹识别并载入原版地图，载入前保留原始备份。
 
-打开仓库根目录 `index.html`，选择「开始游戏 → 北京」即可游玩；无需安装依赖。原作者在线游戏不包含此 fork 新增的地图。
+打开仓库根目录 `index.html`，选择「开始游戏 → 北京」可游玩社区版空白路网；选择「北京（原版）」可游玩原作者的既有地铁版本。无需安装依赖。
 
 ## 场景边界
 
@@ -14,7 +14,7 @@
 
 ## 数据与复现
 
-`js/geo_bj.js` 是离线地理数据库，按 ODbL 1.0 提供，署名 © OpenStreetMap contributors。`js/data_bj.js` 提供北京场景配置。所有坐标均为 WGS-84，经纬度不再做 GCJ-02 偏移。
+`js/geo_bj.js` 是社区版离线地理数据库，按 ODbL 1.0 提供，署名 © OpenStreetMap contributors。`js/data_bj.js` 提供社区版北京场景配置。所有坐标均为 WGS-84，经纬度不再做 GCJ-02 偏移。
 
 投影：`x = (lon - 116.12) × 341.6`，`y = (40.13 - lat) × 444.1`。以北京纬度附近的等距近似投影到 250 m 格网，编码精度为 1/64 格。
 
